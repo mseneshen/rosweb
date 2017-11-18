@@ -1,4 +1,4 @@
-var WidgetCameraViewer = function (widgetInstanceId) {
+var WidgetCameraViewer = function (widgetInstanceId, serializedData) {
   // Mandatory properties
   var self = this;
   this.widgetInstanceId = widgetInstanceId;
@@ -7,6 +7,15 @@ var WidgetCameraViewer = function (widgetInstanceId) {
   // Mandatory callback methods
   this.clbkCreated = function () {
     self.host = $("#jsRosUrl").val().split("//")[1].split(":")[0];
+
+    self.serializedData = serializedData;
+    if(self.serializedData && self.serializedData.topic){
+      self.host = self.serializedData.host;
+      self.port = self.serializedData.port;
+      self.width = self.serializedData.width;
+      self.height = self.serializedData.height;
+      self.onchange(self.serializedData.topic);
+    }
   };
   this.clbkConfirm = function() {
 
@@ -36,6 +45,11 @@ var WidgetCameraViewer = function (widgetInstanceId) {
       height: self.height,
       topic: selectedTopic
     });
+    self.serializedData.host = self.host;
+    self.serializedData.port = self.port;
+    self.serializedData.width = self.width;
+    self.serializedData.height = self.height;
+    self.serializedData.topic = selectedTopic;
   };
 
   // parameters

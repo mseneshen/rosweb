@@ -5,8 +5,8 @@ import { WidgetParent } from '../../ts/classmodel/widget'
 declare var ros: ROSLIB.Ros;
 
 class WidgetNewWidget extends WidgetParent {
-  constructor(widgetInstanceId: number) {
-    super(widgetInstanceId);
+  constructor(widgetInstanceId: number, serializedData: Object) {
+    super(widgetInstanceId, serializedData);
     this.topic = new ROSLIB.Topic({ ros: ros, name: "", messageType: "" });
   }
 

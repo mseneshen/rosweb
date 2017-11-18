@@ -6,9 +6,19 @@ import { Helper } from '../../ts/helpers/html';
 declare var ros: ROSLIB.Ros;
 
 class WidgetTopicPublisher extends WidgetParent {
-  constructor(widgetInstanceId: number) {
-    super(widgetInstanceId);
-    this.topic = new ROSLIB.Topic({ ros: ros, name: "", messageType: "" });
+  constructor(widgetInstanceId: number, serializedData: any) {
+    super(widgetInstanceId, serializedData);
+    let name = "";
+    let messageType = "";
+
+    if('name' in serializedData){
+      name = serializedData.name;
+      this.topicName = serializedData.name;
+      messageType = serializedData.type;
+      this.topicType = serializedData.type;
+    }
+
+    this.topic = new ROSLIB.Topic({ ros: ros, name: name, messageType: messageType });
   }
   // Mandatory callbacks
   clbkCreated(): void {
@@ -33,6 +43,11 @@ class WidgetTopicPublisher extends WidgetParent {
       $(this.selector).find(".jsWidgetTopicPublisherStop").removeAttr("disabled");
       this.stop();
     });
+
+    if('name' in this.serializedData){
+      this.clbkConfirm();
+    }
+
   }
   clbkResized(): void {
   }
@@ -51,6 +66,10 @@ class WidgetTopicPublisher extends WidgetParent {
       alert("Topic type not found, please try again");
       console.log(error);
     });
+
+    this.serializedData.name = this.topicName;
+    this.serializedData.type = this.topicType;
+
   }
 
   // button callbacks

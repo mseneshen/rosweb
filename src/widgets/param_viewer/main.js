@@ -1,8 +1,10 @@
-var WidgetParamViewer = function (widgetInstanceId) {
+var WidgetParamViewer = function (widgetInstanceId, serializedData) {
   // Mandatory properties
   var self = this;
   this.widgetInstanceId = widgetInstanceId;
   this.selector = ".jsWidgetContainer[data-widget-instance-id=" + self.widgetInstanceId + "]";
+
+  this.serializedData = serializedData;
 
   // Mandatory callback methods
   this.clbkCreated = function () {
@@ -18,6 +20,10 @@ var WidgetParamViewer = function (widgetInstanceId) {
       self.save();
       e.preventDefault();
     });
+
+    if(self.serializedData && self.serializedData.param){
+      self.param1Changed(self.serializedData.param);
+    }
   };
   this.clbkConfirm = function () { };
   this.clbkResized = function () { };
@@ -28,6 +34,8 @@ var WidgetParamViewer = function (widgetInstanceId) {
     $(self.selector).find("p.name").html(selectedParam);
     self.param1.name = selectedParam;
     self.refresh();
+
+    self.serializedData.param = selectedParam;
   };
   this.clbkTab = function (isMyTab) { };
 

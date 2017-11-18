@@ -15,17 +15,20 @@ export class WidgetInstance {
   public WidgetCallbackClass: any;
   public position: Geometry.Point2D;
   public size: Geometry.Point2D;
+  public serializedData: Object;
+  public selector: String;
 
-  constructor(widget: Widget, tab: Tab, position: Geometry.Point2D = {x:0, y:0}, size: Geometry.Point2D = {x:0, y:0}) {
+  constructor(widget: Widget, tab: Tab, position: Geometry.Point2D = {x:0, y:0}, size: Geometry.Point2D = {x:0, y:0}, serializedData: Object = {}) {
     this.widget_id = widget.id;
     this.tab_id = tab.id;
     this.position = position;
     this.size = size;
+    this.serializedData = serializedData;
 
     currentWorkspace.create<WidgetInstance>(this);
 
     // this.WidgetCallbackClass = instance_loader.getInstance<any>(window, "Widget" + widget.alias, this.id);
-    this.WidgetCallbackClass = new window["Widget" + widget.alias](this.id);
+    this.WidgetCallbackClass = new window["Widget" + widget.alias](this.id, this.serializedData);
 
     frontend.insertWidgetInstance(this, () => this.WidgetCallbackClass.clbkCreated());
   }

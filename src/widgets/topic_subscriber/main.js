@@ -1,11 +1,18 @@
-var WidgetTopicSubscriber = function (widgetInstanceId) {
+var WidgetTopicSubscriber = function (widgetInstanceId, serializedData) {
   // Mandatory properties
   var self = this;
   this.widgetInstanceId = widgetInstanceId;
   this.selector = ".jsWidgetContainer[data-widget-instance-id=" + self.widgetInstanceId + "]";
 
   // Mandatory callback methods
-  this.clbkCreated = function () { };
+  this.clbkCreated = function () {
+    self.serializedData = serializedData;
+    if(self.serializedData == null || self.serializedData.name == undefined){
+      self.serializedData.name = null;
+    }else{
+      self.onchange1(self.serializedData.name);
+    }
+  };
   this.clbkConfirm = function () { };
   this.clbkResized = function () { };
   this.clbkMoved = function () { };
@@ -20,6 +27,8 @@ var WidgetTopicSubscriber = function (widgetInstanceId) {
   this.onchange1 = function (selectedTopic) {
     self.topic1.unsubscribe();
     self.topic1.name = selectedTopic;
+    self.serializedData.name = selectedTopic;
+
     var elem = $(self.selector).find(".datatopic1");
     $(elem).html("");
 
@@ -75,5 +84,5 @@ var WidgetTopicSubscriber = function (widgetInstanceId) {
 }
 
 $(document).ready(function () {
-  // If you need an onload callback
+  
 });

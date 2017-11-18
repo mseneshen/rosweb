@@ -3,9 +3,11 @@ import { WidgetInterface } from '../interface/widget';
 export class WidgetParent implements WidgetInterface {
   public widgetInstanceId: number;
   public selector: string;
+  public serializedData: any;
 
-  constructor(widgetInstanceId: number) {
+  constructor(widgetInstanceId: number, serializedData: any) {
     this.widgetInstanceId = widgetInstanceId;
+    this.serializedData = serializedData;
     this.setSelector();
   }
 
