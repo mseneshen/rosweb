@@ -1,19 +1,43 @@
 import { Workspace } from "../model/workspace";
 import { ROSWeb } from "../model/rosweb";
-import {SerializedWorkspace} from "../model/serialized_workspace";
+import { SerializedWorkspace } from "../model/serialized_workspace";
 
 class Storage {
 
   private count: number;
+  private httpRequest: XMLHttpRequest;
 
   constructor() {
     this.count = 0;
+    let rosweb = new ROSWeb();
+
     if (localStorage["ROSWeb"] == undefined) {
-      let rosweb = new ROSWeb();
       localStorage.setItem("ROSWeb", JSON.stringify(rosweb));
       console.log("creating rosweb localstorage");
     }
+
+    this.httpRequest = new XMLHttpRequest();
+    this.httpRequest.open( 'GET', "http://127.0.0.1:8081/workspaces" );
+    this.httpRequest.setRequestHeader( "Content-Type", "application/json" );
+    
+    this.httpRequest.onreadystatechange = () => {
+      if ( this.httpRequest.readyState == XMLHttpRequest.DONE ) {
+        if ( this.httpRequest.responseText != "undefined" ) {
+          console.log("Received workspaces!");
+          console.log(this.httpRequest.responseText);
+          if(this.httpRequest.responseText == "{}\n"){
+            console.log("No workspaces exist yet on server.");
+            return;
+          }
+          localStorage.setItem("ROSWeb", this.httpRequest.responseText);
+        }
+      }
+    };
+
+    this.httpRequest.send( false );
+
   }
+
   public Init(): void {
   }
 
@@ -63,7 +87,25 @@ class Storage {
   public SaveWorkspace(workspace: SerializedWorkspace): void {
     let rosweb: any = JSON.parse(localStorage.getItem("ROSWeb"));
     rosweb.Workspaces.push(workspace);
+
     localStorage.setItem("ROSWeb", JSON.stringify(rosweb));
+
+    this.httpRequest = new XMLHttpRequest();
+    this.httpRequest.open( 'POST', "http://127.0.0.1:8081/workspaces" );
+    this.httpRequest.setRequestHeader( "Content-Type", "application/json" );
+    
+    this.httpRequest.onreadystatechange = () => {
+      if ( this.httpRequest.readyState == XMLHttpRequest.DONE ) {
+        if ( this.httpRequest.responseText != "undefined" ) {
+          console.log("Saved workspaces!");
+          console.log(this.httpRequest.responseText);
+          //localStorage.setItem("ROSWeb", JSON.parse( httpRequest.responseText ));
+        }
+      }
+    };
+
+    this.httpRequest.send( JSON.stringify(rosweb) );
+
   }
 
   // Load
@@ -74,6 +116,7 @@ class Storage {
     catch (e) {
       alert(e);
     }
+
   }
 
   // Remove
